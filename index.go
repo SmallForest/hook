@@ -33,7 +33,7 @@ func main() {
 
 	router.POST("/hook", func(c *gin.Context) {
 		res := c.Request.Body
-		fmt.Println("回调结果", res)
+		fmt.Println("hook结果", res)
 		bodydata, err := ioutil.ReadAll(res)
 		if err != nil {
 			fmt.Println(err)
