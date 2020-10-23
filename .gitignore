@@ -1,0 +1,5 @@
+.idea/
+.DS_Store
+application.ini
+test/
+vendor/
