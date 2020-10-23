@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/astaxie/beego v1.12.2
+	github.com/bitly/go-simplejson v0.5.0
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gogap/wechat v1.0.0
