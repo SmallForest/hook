@@ -82,6 +82,10 @@ func main() {
 			fmt.Println("7商家web后台")
 			sh.NewSession().SetDir("/usr/share/nginx/html/code/jinlianlian-business-web").Command("git", "checkout", "develop").Command("git", "pull").Run()
 		}
+		if repository == "smallForest/jinlianlian-platform-web" {
+			fmt.Println("8平台苍穹web后台")
+			sh.NewSession().SetDir("/usr/share/nginx/html/code/jinlianlian-platform-web").Command("git", "checkout", "develop").Command("git", "pull").Run()
+		}
 
 	})
 	_ = router.Run(conf.Run().Section("app").Key("start_listen_port").String())
