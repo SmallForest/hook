@@ -44,3 +44,13 @@ func GenerateRangeNum(min, max int) int {
 	randNum := rand.Intn(max-min) + min
 	return randNum
 }
+
+//校验字符串是否在字符串数组里面
+func IsContain(items []string, item string) bool {
+	for _, eachItem := range items {
+		if eachItem == item {
+			return true
+		}
+	}
+	return false
+}
