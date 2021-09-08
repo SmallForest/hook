@@ -33,7 +33,7 @@ func update(path string) {
 		times++
 	}
 	if times < maxTimes {
-		sh.NewSession().SetDir(path).Command("git", "checkout", "develop").Command("git", "pull").Run()
+		sh.NewSession().SetDir(path).Command("bash", "-c", "git checkout develop && git pull").Run()
 	} else {
 		log.Println("超时未执行，此时times ：", times)
 	}
