@@ -18,7 +18,7 @@ import (
 )
 
 // 以上都是测试
-func update(path string) {
+func update(path string) bool {
 	// 锁文件
 	lock_path := "/.git/index.lock"
 	// 最大次数
@@ -37,6 +37,7 @@ func update(path string) {
 	} else {
 		log.Println("超时未执行，此时times ：", times)
 	}
+	return true
 }
 
 func main() {
@@ -74,35 +75,22 @@ func main() {
 		}
 		log.Println("识别到的clone_url是", clone_url)
 
+		code_dir := conf.Run().Section("app").Key("code_dir").String()
+		log.Println("代码运行的路径是", code_dir)
+
 		// 注意 Unable to create '/usr/share/nginx/html/code/jinlianlian-app-api/.git/index.lock': File exists.
 		// 切换目录 ....
-		if repository == "smallForest/jinlianlian-platform-api" {
-			log.Println("1平台端API")
-			update("/usr/share/nginx/html/code/jinlianlian-platform-api")
-		} else if repository == "smallForest/jinlianlian-app-api" {
-			log.Println("2APP端API")
-			update("/usr/share/nginx/html/code/jinlianlian-app-api")
-		} else if repository == "smallForest/jinlianlian-business-api" {
-			log.Println("3商家端API")
-			update("/usr/share/nginx/html/code/jinlianlian-business-api")
-		} else if repository == "smallForest/jinlianlian-business-doc" {
-			log.Println("4商家端文档")
-			update("/usr/share/nginx/html/code/jinlianlian-business-doc")
-		} else if repository == "smallForest/jinlianlian-app-doc" {
-			log.Println("5APP端文档")
-			update("/usr/share/nginx/html/code/jinlianlian-app-doc")
-		} else if repository == "smallForest/jinlianlian-platform-doc" {
-			log.Println("6平台端文档")
-			update("/usr/share/nginx/html/code/jinlianlian-platform-doc")
-		} else if repository == "smallForest/jinlianlian-business-web" {
-			log.Println("7商家web后台")
-			update("/usr/share/nginx/html/code/jinlianlian-business-web")
-		} else if repository == "smallForest/jinlianlian-platform-web" {
-			log.Println("8平台苍穹web后台")
-			update("/usr/share/nginx/html/code/jinlianlian-platform-web")
-		} else if repository == "smallForest/jinlianlian-app-h5" {
-			log.Println("9H5web")
-			update("/usr/share/nginx/html/code/jinlianlian-app-h5")
+		// 识别到的仓库名字在白名单里面，进行下一步操作
+		if utils.IsInWhiteList(repository) {
+			log.Println("仓库", repository, "在白名单中。执行更新")
+			if name := utils.RepositoryName(repository); name != "" {
+				update(code_dir + name)
+				log.Println("更新成功")
+			}else{
+				log.Println("更新失败")
+			}
+		} else {
+			log.Println("仓库", repository, "不在白名单中。不执行更新")
 		}
 
 	})
