@@ -25,6 +25,8 @@ func update(path string) bool {
 	maxTimes := 10
 	// 声明times
 	times := 0
+	// 执行的命令
+	command := conf.Run().Section("app").Key("command").String()
 	// 检查锁文件是否存在，如果存在则等待1s后再次尝试
 	// 当锁文件存在的时候不可以调用git命令会报错 并且只会等待10秒，超过十秒不再执行git命令
 	for utils.FileExist(path+lock_path) && times < maxTimes {
@@ -33,7 +35,7 @@ func update(path string) bool {
 		times++
 	}
 	if times < maxTimes {
-		sh.NewSession().SetDir(path).Command("bash", "-c", "git checkout develop && git pull").Run()
+		sh.NewSession().SetDir(path).Command("bash", "-c", command).Run()
 	} else {
 		log.Println("超时未执行，此时times ：", times)
 	}
