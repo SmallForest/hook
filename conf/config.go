@@ -29,7 +29,4 @@ func Run() *ini.File {
 	})
 
 	return cfg
-	// log.Println("App Mode:", cfg.Section("").Key("app_mode").String())
-	// log.Println("Data Path:", cfg.Section("paths").Key("data").String())
-	// log.Println("port:", cfg.Section("server").Key("http_port").MustInt(3306))
 }

@@ -6,6 +6,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"hook/conf"
 	"log"
 	"os"
@@ -30,6 +31,28 @@ func RepositoryName(repository string) string {
 	arr := strings.Split(repository, "/")
 	if len(arr) == 2 {
 		return arr[1]
+	}
+	return ""
+}
+
+type commandGit string
+
+// 判断是否是git命令
+func (g commandGit) isGitCommand() bool {
+	return strings.Contains(string(g), "git")
+}
+
+// GetCommand 获取要执行的命令
+func GetCommand(repository string) string {
+	name := RepositoryName(repository)
+	command := conf.Run().Section("app").Key("command").String()
+	b := []byte(command)
+	r := make(map[string]commandGit, 6)
+	json.Unmarshal(b, &r)
+
+	//校验需要是git命令才返回
+	if r[name].isGitCommand() {
+		return string(r[name])
 	}
 	return ""
 }

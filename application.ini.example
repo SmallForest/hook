@@ -4,6 +4,6 @@ start_listen_port = :8888
 ;代码路径
 code_dir = /usr/share/nginx/html/code/
 ;进行自动部署的仓库名字，英文逗号拼接
-repository_list = smallForest/api
+repository_list = smallForest/app-api
 ;进入项目之后执行的命令
-command = git checkout develop && git pull
+command = {"app-api":"git checkout work \u0026\u0026 git pull"}
