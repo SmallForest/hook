@@ -32,7 +32,7 @@ type Application struct {
 func Run() {
 	once.Do(func() {
 		log.Println("读取配置文件")
-		yamlFile, err := ioutil.ReadFile("/Users/smallforest/GolandProjects/hook/application.yaml")
+		yamlFile, err := ioutil.ReadFile("application.yaml")
 		if err != nil {
 			log.Println(err.Error())
 		} // 将读取的yaml文件解析为响应的 struct
