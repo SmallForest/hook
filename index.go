@@ -20,7 +20,7 @@ import (
 // 以上都是测试
 func update(path, repository string) bool {
 	// 锁文件
-	lock_path := "/.git/index.lock"
+	lockPath := "/.git/index.lock"
 	// 最大次数
 	maxTimes := 10
 	// 声明times
@@ -32,7 +32,7 @@ func update(path, repository string) bool {
 	}
 	// 检查锁文件是否存在，如果存在则等待1s后再次尝试
 	// 当锁文件存在的时候不可以调用git命令会报错 并且只会等待10秒，超过十秒不再执行git命令
-	for utils.FileExist(path+lock_path) && times < maxTimes {
+	for utils.FileExist(path+lockPath) && times < maxTimes {
 		// 当文件存在的时候，执行sleep程序
 		time.Sleep(1 * time.Second)
 		times++
@@ -48,17 +48,20 @@ func update(path, repository string) bool {
 func main() {
 	// 发布模式开启
 	gin.SetMode(gin.ReleaseMode)
+	//读取配置
+	conf.Run()
+	log.Println(conf.Config)
 
 	router := gin.Default()
 
 	router.POST("/hook", func(c *gin.Context) {
 		res := c.Request.Body
 		log.Println("hook结果", res)
-		bodydata, err := ioutil.ReadAll(res)
+		bodyData, err := ioutil.ReadAll(res)
 		if err != nil {
 			log.Println(err)
 		}
-		j, err := simplejson.NewJson(bodydata)
+		j, err := simplejson.NewJson(bodyData)
 		if err != nil {
 			log.Printf("err %v", err)
 		}
@@ -68,14 +71,14 @@ func main() {
 		}
 		log.Println("识别到的仓库是", repository)
 
-		clone_url, err := j.Get("repository").Get("clone_url").String()
+		cloneUrl, err := j.Get("repository").Get("clone_url").String()
 		if err != nil {
 			log.Printf("err %v", err)
 		}
-		log.Println("识别到的clone_url是", clone_url)
+		log.Println("识别到的clone_url是", cloneUrl)
 
-		code_dir := conf.Run().Section("app").Key("code_dir").String()
-		log.Println("代码运行的路径是", code_dir)
+		codeDir := conf.Config.Application.CodeDir
+		log.Println("代码运行的路径是", codeDir)
 
 		// 注意 Unable to create '/usr/share/nginx/html/code/******/.git/index.lock': File exists.
 		// 切换目录 ....
@@ -83,7 +86,7 @@ func main() {
 		if utils.IsInWhiteList(repository) {
 			log.Println("仓库", repository, "在白名单中。执行更新")
 			if name := utils.RepositoryName(repository); name != "" {
-				if update(code_dir+name, repository) {
+				if update(codeDir+name, repository) {
 					log.Println("更新成功")
 				} else {
 					log.Println("更新失败")
@@ -96,5 +99,7 @@ func main() {
 		}
 
 	})
-	_ = router.Run(conf.Run().Section("app").Key("start_listen_port").String())
+
+	//需要带冒号
+	_ = router.Run(":" + conf.Config.Application.Port)
 }

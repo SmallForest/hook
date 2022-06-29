@@ -6,7 +6,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"hook/conf"
 	"log"
 	"os"
@@ -22,8 +21,9 @@ func FileExist(path string) bool {
 
 // IsInWhiteList 判断当前仓库名字是否在白名单
 func IsInWhiteList(repository string) bool {
-	repository_list := conf.Run().Section("app").Key("repository_list").String()
-	return strings.Contains(repository_list, repository)
+	//将仓库拼接成字符串
+	repositoryList := strings.Join(conf.Config.Application.Repository, ",")
+	return strings.Contains(repositoryList, repository)
 }
 
 // RepositoryName 获取仓库的名字
@@ -35,24 +35,19 @@ func RepositoryName(repository string) string {
 	return ""
 }
 
-type commandGit string
-
 // 判断是否是git命令
-func (g commandGit) isGitCommand() bool {
-	return strings.Contains(string(g), "git")
+func isGitCommand(s string) bool {
+	return strings.Contains(s, "git")
 }
 
 // GetCommand 获取要执行的命令
 func GetCommand(repository string) string {
 	name := RepositoryName(repository)
-	command := conf.Run().Section("app").Key("command").String()
-	b := []byte(command)
-	r := make(map[string]commandGit, 6)
-	json.Unmarshal(b, &r)
+	command := conf.Config.Application.Commands
 
 	//校验需要是git命令才返回
-	if r[name].isGitCommand() {
-		return string(r[name])
+	if isGitCommand(command[name]) {
+		return string(command[name])
 	}
 	return ""
 }

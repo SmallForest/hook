@@ -6,27 +6,39 @@
 package conf
 
 import (
-	"gopkg.in/ini.v1"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"log"
-	"os"
 	"sync"
 )
 
 var once sync.Once
 
-var cfg *ini.File
+var Config Conf
 var err error
 
+type Conf struct {
+	Application Application `yaml:"application"`
+}
+
+type Application struct {
+	Port       string            `yaml:"port"`
+	CodeDir    string            `yaml:"code_dir"`
+	Repository []string          `yaml:"repository"`
+	Commands   map[string]string `yaml:"commands"`
+}
+
 //单例
-func Run() *ini.File {
+func Run() {
 	once.Do(func() {
 		log.Println("读取配置文件")
-		cfg, err = ini.Load("application.ini")
+		yamlFile, err := ioutil.ReadFile("/Users/smallforest/GolandProjects/hook/application.yaml")
 		if err != nil {
-			log.Printf("Fail to read file: %v", err)
-			os.Exit(1)
+			log.Println(err.Error())
+		} // 将读取的yaml文件解析为响应的 struct
+		err = yaml.Unmarshal(yamlFile, &Config)
+		if err != nil {
+			log.Println(err.Error())
 		}
 	})
-
-	return cfg
 }
